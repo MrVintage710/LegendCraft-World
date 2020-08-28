@@ -5,9 +5,9 @@ const planet = {
     name: "Casiopia",
     diameter: 2,
     moons: [
-        {name:"Yela", diameter: 0.5, orbit_distance: 1.5, offset:{x:1, y:1, z:1}},
-        {name:"Virgo", diameter: 0.5, orbit_distance: 2.5, offset:{x:-1, y:0, z:1}},
-        {name:"Tela", diameter: 0.5, orbit_distance: 2.5, offset:{x:-1, y:1, z:-1}}
+        {name:"Yela", diameter: 0.5, orbit_distance: 1.5, rps:1/4, offset:{x:1, y:1, z:1}},
+        {name:"Virgo", diameter: 0.5, orbit_distance: 2.0, rps:-1/10, offset:{x:-1, y:0, z:1}},
+        {name:"Tela", diameter: 0.5, orbit_distance: 2.5, rps:1/6, offset:{x:-1, y:1, z:-1}}
     ]
 };
 
@@ -66,6 +66,14 @@ function addMoon(scene, moon, renderQueue) {
     mesh.setPivotMatrix(BABYLON.Matrix.Translation(axis.x, axis.y, axis.z), false);
     var rot = unit_dir.cross(new BABYLON.Vector3(0, 1, 0));
 
+    mesh.actionManager = new BABYLON.ActionManager(scene);
+    mesh.actionManager.registerAction(
+        new BABYLON.ExecuteCodeAction(
+            BABYLON.ActionManager.OnPickTrigger,
+            () => {console.log("HIT!")},
+        )
+    );
+
     var angle = Math.asin(unit_dir.y);
     var path = BABYLON.MeshBuilder.CreateTorus(`${moon.name}_path`, {thickness: 0.02, diameter: moon.orbit_distance*2, tessellation: 64}, scene)
     path.rotate(rot, angle)
@@ -73,8 +81,7 @@ function addMoon(scene, moon, renderQueue) {
     debug_mesh.push(path);
 
     renderQueue.push((delta) => {
-        mesh.rotate(unit_dir.cross(rot), Math.PI / 400, BABYLON.Space.LOCAL)
-        //path.rotate(unit_dir, 0.01);
+        mesh.rotate(unit_dir.cross(rot), ((2 * Math.PI) * moon.rps) * delta, BABYLON.Space.LOCAL)
     })
 }
 
@@ -132,7 +139,8 @@ engine.runRenderLoop(() => {
     scene.render();
 
     renderQueue.forEach((cb) => {
-        cb(0);
+        cb(engine.getDeltaTime() / 1000);
+
     })
 
     step += 1;
