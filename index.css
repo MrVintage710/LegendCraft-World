@@ -1,0 +1,36 @@
+body, html {
+    margin: 0px;
+    overflow: hidden;
+}
+
+#render-canvas {
+    width: 100%;
+    height: 100%;
+}
+
+#canvas-container {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+}
+
+#info-panel {
+    height: 100vh;
+    width: 33%;
+    position: absolute;
+    z-index: 10;
+    opacity: 0.5;
+    padding: 10vh 3vw;
+    box-sizing: border-box;
+}
+
+#info-panel > .panel {
+
+}
+
+.panel {
+    background-color: blue;
+    opacity: 0.5;
+    width: 100%;
+    height: 100%;
+}
